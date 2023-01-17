@@ -5,26 +5,35 @@ import (
 	"github.com/slack-go/slack"
 )
 
-func GetClient(token string) *slack.Client {
-	return slack.New(token)
+type Slackapi struct {
+	Client		*slack.Client
+	ChanId 		*string
 }
 
-func CreateDMChannel(api *slack.Client, users string) (*string, error) {
+func GetClient(token string) *Slackapi {
+	return &Slackapi{
+		Client: slack.New(token),
+	}
+}
+
+func (api *Slackapi) CreateDMChannel(users string) (error) {
 	var chanId *slack.Channel
 	var err error
-	chanId,_,_,err = api.OpenConversation(&slack.OpenConversationParameters{
+	chanId,_,_,err = api.Client.OpenConversation(&slack.OpenConversationParameters{
 		ReturnIM : false,
 		Users: []string{users},
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &chanId.GroupConversation.Conversation.ID, nil
+	api.ChanId = &chanId.GroupConversation.Conversation.ID
+
+	return nil
 }
 
-func SendMessage(api *slack.Client, chanId string, msg string) error {
-	_, _, err := api.PostMessage(chanId,slack.MsgOptionText(msg, false))
+func (api *Slackapi) SendMessage(msg string) error {
+	_, _, err := api.Client.PostMessage(*api.ChanId,slack.MsgOptionText(msg, false))
 	if err != nil {
 		return err
 	}
