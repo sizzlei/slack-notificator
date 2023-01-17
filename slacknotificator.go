@@ -3,6 +3,7 @@ package slacknotificator
 
 import (
 	"github.com/slack-go/slack"
+	"encoding/json"
 )
 
 type Slackapi struct {
@@ -33,10 +34,29 @@ func (api *Slackapi) CreateDMChannel(users string) (error) {
 }
 
 func (api *Slackapi) SendMessage(msg string) error {
-	_, _, err := api.Client.PostMessage(*api.ChanId,slack.MsgOptionText(msg, false))
+	_, _, err := api.Client.PostMessage(*api.ChanId,slack.MsgOptionText(msg, false),slack.MsgOptionAsUser(false))
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
+
+func (api *Slackapi) SendAttachment(att slack.Attachment) error {
+	_, _, err := api.Client.PostMessage(*api.ChanId,slack.MsgOptionText("", false),slack.MsgOptionAttachments(att),slack.MsgOptionAsUser(false))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateAttachement(jsonString string) (slack.Attachment, error) {
+	var r slack.Attachment
+	err := json.Unmarshal([]byte(jsonString),&r)
+	if err != nil {
+		return r,err
+	}
+
+	return r, nil
+} 
