@@ -60,3 +60,14 @@ func CreateAttachement(jsonString string) (slack.Attachment, error) {
 
 	return r, nil
 } 
+
+func (api *Slackapi) GetMemberId(email string) (*string, error){
+	user, err := api.Client.GetUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	memberId := user.ID
+
+	return &memberId, nil
+}
