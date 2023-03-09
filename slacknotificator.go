@@ -42,8 +42,8 @@ func (api *Slackapi) SendMessage(msg string) error {
 	return nil
 }
 
-func (api *Slackapi) SendAttachment(att slack.Attachment) error {
-	_, _, err := api.Client.PostMessage(*api.ChanId,slack.MsgOptionText("", false),slack.MsgOptionAttachments(att),slack.MsgOptionAsUser(false))
+func (api *Slackapi) SendAttachment(previewMsg string, att slack.Attachment) error {
+	_, _, err := api.Client.PostMessage(*api.ChanId,slack.MsgOptionText(previewMsg, false),slack.MsgOptionAttachments(att),slack.MsgOptionAsUser(false))
 	if err != nil {
 		return err
 	}
