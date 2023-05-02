@@ -71,3 +71,17 @@ func (api *Slackapi) GetMemberId(email string) (*string, error){
 
 	return &memberId, nil
 }
+
+func SendWebhookAttchment(url string, tit string, att slack.Attachment) error {
+	err := slack.PostWebhook(url,&slack.WebhookMessage{
+		Text: tit,
+		Attachments: []slack.Attachment{
+			att,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
