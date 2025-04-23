@@ -4,6 +4,7 @@ package slacknotificator
 import (
 	"github.com/slack-go/slack"
 	"encoding/json"
+	"os"
 )
 
 type Slackapi struct {
@@ -84,4 +85,37 @@ func SendWebhookAttchment(url string, tit string, att slack.Attachment) error {
 	}
 
 	return nil
+}
+
+type InFile struct {
+	FilePath 		string 
+	FileName 		string 
+	Title 			string 
+	Comment 		string
+}
+
+// 2025-04-23
+func (api *Slackapi) UploadFile(in InFile) (*slack.FileSummary, error) {
+	// File Size
+	fileInfo, err := os.Stat(in.FilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	fileSize := fileInfo.Size()
+
+	Params := slack.UploadFileV2Parameters{
+		File: 				in.FilePath,
+		FileSize: 			int(fileSize),
+		Channel:			*api.ChanId,
+		Filename:			in.FileName,
+		Title:				in.Title,		
+		InitialComment: 	in.Comment,
+	}
+
+	file, err := api.Client.UploadFileV2(Params)
+	if err != nil {
+		return nil, err
+	}
+	return file,nil
 }
