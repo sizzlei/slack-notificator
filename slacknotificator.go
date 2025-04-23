@@ -18,6 +18,11 @@ func GetClient(token string) *Slackapi {
 	}
 }
 
+func (api *Slackapi) SetChannel(channelId string) *Slackapi {
+	api.ChanId = &channelId
+	return api
+}
+
 func (api *Slackapi) CreateDMChannel(users string) (error) {
 	var chanId *slack.Channel
 	var err error
